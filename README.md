@@ -9,5 +9,5 @@ You can setup it on PS1 or as PROMPT_COMMAND
 source PATH/TO/FILE/bash-timer.sh
 
 # note the single quote!
-export PROMPT_COMMAND='$()BashTimer::Prompt'
+export PROMPT_COMMAND='$(BashTimer::Prompt)'
 ```
