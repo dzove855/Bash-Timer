@@ -2,16 +2,12 @@
 
 # we need bash >=4.4.
 
-declare BASHTIMER_CACHE_DIR=$HOME/.cache/bash-timer
-
-# create needed directorys
-BashTimer::setup(){
-    [[ ! -d "$BASHTIMER_CACHE_DIR" ]] && mkdir "$BASHTIMER_CACHE_DIR"
-}
+declare BASHTIMER_TIME
+declare BASHTIMER_LAST_CMD
 
 # save time in a temporary file and remove it once it's not used anymore
 BashTimer::setTime(){
-    printf '%(%s)T' > "$BASHTIMER_CACHE_DIR/$$"
+    printf -v BASHTIMER_TIME '%(%s)T'
 }
 
 # we could convert function to arithmetic
@@ -29,43 +25,39 @@ BashTimer::Convert(){
 }
 
 BashTimer::PS1(){
-    local _o _t timetaken _p
-    _p="$(<"$BASHTIMER_CACHE_DIR/cmd.$$")"    
+    local _t timetaken
 
-    [[ -z "$_p" ]] && {
+    [[ -z "$BASHTIMER_LAST_CMD" ]] && {
         printf '0s'
         BashTimer::setTime
         return
     }
 
-    _o="$(<"$BASHTIMER_CACHE_DIR/$$")"
     printf -v _t '%(%s)T'
 
-    ((timetaken=_t - _o))
+    ((timetaken=_t - BASHTIMER_TIME))
         
     BashTimer::Convert "$timetaken"
 
     BashTimer::setTime
-    : > "$BASHTIMER_CACHE_DIR/cmd.$$"
+    BASHTIMER_LAST_CMD=""
 }
 
 BashTimer::Prompt(){
-    local _o _t timetaken _p
-    _p="$(<"$BASHTIMER_CACHE_DIR/cmd.$$")"
+    local _t timetaken
 
-    [[ -z "$_p" ]] && {
+    [[ -z "$BASHTIMER_LAST_CMD" ]] && {
         BashTimer::setTime
         return
     }
-    _o="$(<"$BASHTIMER_CACHE_DIR/$$")"
     printf -v _t '%(%s)T'
 
-    ((timetaken=_t - _o))
+    ((timetaken=_t - BASHTIMER_TIME))
 
     printf 'Time : %s \n' "$(BashTimer::Convert "$timetaken")"
 
     BashTimer::setTime
-    : > "$BASHTIMER_CACHE_DIR/cmd.$$"
+    BASHTIMER_LAST_CMD=""
 }
 
 BashTimer::Reset(){
@@ -75,9 +67,7 @@ BashTimer::Reset(){
         "BashTimer"*)   return  ;;
         ""|*)           BashTimer::setTime ;;
     esac
-    printf '%s' "$_p" > "$BASHTIMER_CACHE_DIR/cmd.$$"
+    BASHTIMER_LAST_CMD="$_p"
 }
 
-BashTimer::setup
-trap 'rm $BASHTIMER_CACHE_DIR/$$ ; rm $BASHTIMER_CACHE_DIR/cmd.$$' 0
 trap 'BashTimer::Reset' DEBUG
