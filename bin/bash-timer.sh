@@ -50,7 +50,7 @@ BashTimer::PS1(){
 }
 
 BashTimer::Prompt(){
-	local _o _t timetaken _p
+    local _o _t timetaken _p
     _p="$(<"$BASHTIMER_CACHE_DIR/cmd.$$")"
 
     [[ -z "$_p" ]] && {
@@ -58,7 +58,7 @@ BashTimer::Prompt(){
         return
     }
     _o="$(<"$BASHTIMER_CACHE_DIR/$$")"
-	printf -v _t '%(%s)T'
+    printf -v _t '%(%s)T'
 
     ((timetaken=_t - _o))
 
