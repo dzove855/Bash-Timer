@@ -16,7 +16,6 @@ declare -A BASHTIMER_DEFAULT_COLOR=(
 declare -A BASHTIMER_COLOR
 declare -a BASHTIMER_IGNORE_COMMAND=("history" "BashTimer")
 
-# save time in a temporary file and remove it once it's not used anymore
 BashTimer::setTime(){
     printf -v BASHTIMER_TIME "%($BASHTIMER_TIME_FORMAT)T"
     printf -v BASHTIMER_TTIME '%(%s)T'
