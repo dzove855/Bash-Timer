@@ -88,7 +88,7 @@ BashTimer::FancyPrompt(){
 
     out="[ Taken : $(BashTimer::Convert "$timetaken") | Start Time : $BASHTIMER_TIME , End Time : $_n ]"
 
-    printf "%b%$((COLUMNS - ${#out} + 20))s%b\n" "$col" "$out" "${BASHTIMER_COLOR[reset]:-${BASHTIMER_DEFAULT_COLOR[reset]}}"
+    printf "%b%${COLUMNS}s%b\n" "$col" "$out" "${BASHTIMER_COLOR[reset]:-${BASHTIMER_DEFAULT_COLOR[reset]}}"
 
     BashTimer::setTime
     BASHTIMER_LAST_CMD=""
