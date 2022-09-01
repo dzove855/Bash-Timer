@@ -112,7 +112,7 @@ BashTimer::FancyPrompt(){
 BashTimer::Reset(){
     local _p="$BASH_COMMAND" entry
     for entry  in "${BASHTIMER_IGNORE_COMMAND[@]}"; do
-        [[ "$_p" =~ $entry ]] && return
+        [[ "$_p" == "$entry"* ]] && return
     done
 
     BashTimer::setTime
