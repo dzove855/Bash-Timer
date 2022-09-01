@@ -29,27 +29,55 @@ BashTimer::Convert(){
 }
 
 BashTimer::PS1(){
-    local _o _t timetaken
+    local _o _t timetaken _p
+    _p="$(<"$BASHTIMER_CACHE_DIR/cmd.$$")"    
+
+    [[ -z "$_p" ]] && {
+        printf '0s'
+        BashTimer::setTime
+        return
+    }
 
     _o="$(<"$BASHTIMER_CACHE_DIR/$$")"
     printf -v _t '%(%s)T'
-    
+
     ((timetaken=_t - _o))
-    
-	BashTimer::Convert "$timetaken"
+        
+    BashTimer::Convert "$timetaken"
+
+    BashTimer::setTime
+    : > "$BASHTIMER_CACHE_DIR/cmd.$$"
 }
 
 BashTimer::Prompt(){
-	local _t timetaken
+	local _o _t timetaken _p
+    _p="$(<"$BASHTIMER_CACHE_DIR/cmd.$$")"
 
+    [[ -z "$_p" ]] && {
+        BashTimer::setTime
+        return
+    }
     _o="$(<"$BASHTIMER_CACHE_DIR/$$")"
 	printf -v _t '%(%s)T'
 
     ((timetaken=_t - _o))
 
     printf 'Time : %s \n' "$(BashTimer::Convert "$timetaken")"
+
+    BashTimer::setTime
+    : > "$BASHTIMER_CACHE_DIR/cmd.$$"
+}
+
+BashTimer::Reset(){
+    local _p="$BASH_COMMAND"
+    case "$_p" in
+        "history"*)     return  ;;
+        "BashTimer"*)   return  ;;
+        ""|*)           BashTimer::setTime ;;
+    esac
+    printf '%s' "$_p" > "$BASHTIMER_CACHE_DIR/cmd.$$"
 }
 
 BashTimer::setup
-trap 'rm $BASHTIMER_CACHE_DIR/$$' 0
-export PS0='$(BashTimer::setTime)'
+trap 'rm $BASHTIMER_CACHE_DIR/$$ ; rm $BASHTIMER_CACHE_DIR/cmd.$$' 0
+trap 'BashTimer::Reset' DEBUG
