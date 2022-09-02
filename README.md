@@ -53,3 +53,6 @@ BASHTIMER_COLOR=(
 # Ignore commands where the timer should not run
 BASHTIMER_IGNORE_COMMAND+=("history" "BashTimer") 
 ```
+
+
+![Alt text](pic/bashtimer.png?raw=true "Bashtimer Picture")
